@@ -14,8 +14,9 @@
     height: 70px;
     padding-top: 26px;
     color: white;
-    position: fixed;
+    position: sticky;
     bottom: 0;
     margin-right: 0px;
     margin-left: 0px;
+    margin-top: 1px;
 }

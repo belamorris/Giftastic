@@ -1,48 +1,100 @@
-$(document).ready(function(){
-// listing my array of topics 
-	var topics = ['Stratocaster', 'Telecaster', 'Les Paul', 'Jazzmaster'];
-// function to turn topics into buttons
-function displaybuttons(){
-    for (var i = 0; i < topics.length; i++){
-        var gifButton = $("<button>");
-        gifButton.addClass("topics");
-        gifButton.addClass("btn btn-primary")
-        gifButton.attr("data-name", topics[i]);
-        gifButton.text(topics[i]);
-        $("#topicButtons").append(gifButton);
+$(document).ready(function () {
+	// listing my array of topics 
+	var topics = [
+	 "Rock",
+	 "Rap", 
+	 "Metal", 
+	 "Punk", 
+	 "Pop", 
+	 "Hip hop", 
+	 "Blues", 
+	 "Classical", 
+	 "Electronic", 
+	 "Alternative", 
+	 "Classic Rock",
+	 "David Bowie"];
+	// function to turn topics into buttons
+	function displaybuttons() {
+
+		$('#topicButtons').empty();
+
+        //create buttons based on terms list
+        for(var i = 0; i < topics.length; i++){
+		var guitarBtn = $('<button>').text(topics[i]).addClass('btn btn-primary').addClass('guitarBtn').attr({'data-name': topics[i]});
+		$('#topicButtons').append(guitarBtn);
+	}
+		$(".guitarBtn").on("click", function () {
+			$("#gifs").empty();
+			var guitar = $(this).data("name");
+			var apiKey = "WSY305l72MwB3JpnUG74hV5Fp85piPgx";
+			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + guitar + "&limit=10&api_key=" + apiKey;
+			console.log(this);
+			//ajax call
+			$.ajax({
+				url: queryURL,
+				method: "GET"
+			}).done(function (response) {
+				//Log response
+				// console.log(response);
+
+
+				var data = response.data;
+				// console.log(response.data)
+
+				//For loop through data
+				for (var i = 0; i < data.length; i++) {
+					// Create div for gifs
+					var gifDiv = $("<div>");
+					gifDiv.addClass("gifDiv");
+
+					//create var for rating
+					var rating = $("<p>");
+					rating.text(data[i].rating);
+
+					//create var fo gifs
+					var gif = $("<img>").addClass("gif");
+					gif.attr("src", data[i].images.fixed_height_still.url);
+					gif.attr("data-gifImg", "still");
+					gif.attr("data-still", data[i].images.fixed_height_still.url);
+					gif.attr("data-animate", data[i].images.fixed_height.url);
+
+					// create an on click to change the state of the gif
+					gif.on("click", function(){
+						var state = $(this).attr("data-state");
+						if (state === "still") {
+							$(this).attr("src", $(this).attr("data-animate"));
+							$(this).attr("data-state", "animate");
+						  } else {
+							$(this).attr("src", $(this).attr("data-still"));
+							$(this).attr("data-state", "still");
+						  }
+
+					})
+
+				
+                    rating.appendTo(gifDiv);
+					gif.appendTo(gifDiv);
+					
+					$("#gifs").append(gifDiv);
+
+
+
+
+				}
+			})
+		})
 	}
 
 
-$("#topicButtons").on("click", function(){
-	var guitar = $(this).data("name");
-	var apiKey = "WSY305l72MwB3JpnUG74hV5Fp85piPgx";
-	var queryURL ="https://api.giphy.com/v1/gifs/search?q=" + guitar + "&limit=10&api_key=" + apiKey;
-	console.log(this);
-	//ajax call
-	$.ajax({
-		url: queryURL,
-		method: "GET"
-	}).done(function (response) {
-		//Log response
-		console.log(response);
-	})
-	$("#gifs").empty();
+		$('#add').on('click', function(){
+			// $('#topicsButtons').empty();
+			var newGuitar = $('#topic-input').val().trim();
+			$('topicButtons').append(newGuitar);
+			topics.push(newGuitar);
+			displaybuttons();
+			return false;
+			console.log(topics);
+		});
 
-	var data = response.data;
-	console.log(response.data)
-	
-	//For loop through data
-	for (var i = 0; i < data.length; i++) {
-		// Create div for gifs
-		var gifDiv = $("<div>");
-		gifDiv.addClass("gifDiv");
-
-}
-})
-}
-	
-
-
-
-displaybuttons();
+	displaybuttons();
 });
